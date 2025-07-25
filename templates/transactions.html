@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Transacciones - Finanzas SRI Ecuador{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800 fw-bold">Historial de Transacciones</h1>
+                    <p class="text-muted mb-0">Todas tus facturas procesadas para deducciones SRI</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('upload_receipt') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>
+                        Nueva Factura
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Categoría</label>
+                            <select class="form-select" id="categoryFilter">
+                                <option value="">Todas las categorías</option>
+                                <option value="ALIMENTACION">Alimentación</option>
+                                <option value="SALUD">Salud</option>
+                                <option value="VESTIMENTA">Vestimenta</option>
+                                <option value="VIVIENDA">Vivienda</option>
+                                <option value="EDUCACION">Educación</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Desde</label>
+                            <input type="date" class="form-control" id="dateFrom">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Hasta</label>
+                            <input type="date" class="form-control" id="dateTo">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button class="btn btn-outline-primary" onclick="filterTransactions()">
+                                    <i class="fas fa-filter me-2"></i>Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Transacciones Registradas</h6>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Error cargando transacciones: {{ error }}
+                    </div>
+                    {% endif %}
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="transactionsTable">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Comerciante</th>
+                                    <th>Monto</th>
+                                    <th>Categoría</th>
+                                    <th>Deducible</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if transactions %}
+                                    {% for transaction in transactions %}
+                                    <tr>
+                                        <td>{{ transaction.get('Fecha', '') }}</td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ transaction.get('Comerciante', 'N/A') }}</strong>
+                                                {% if transaction.get('RUC') %}
+                                                <br><small class="text-muted">RUC: {{ transaction.get('RUC') }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <strong>${{ "{:,.2f}".format(transaction.get('Monto Total', 0)) }}</strong>
+                                        </td>
+                                        <td>
+                                            {% set category = transaction.get('Categoría SRI', '') %}
+                                            {% if category == 'ALIMENTACION' %}
+                                                <span class="badge bg-success">{{ category }}</span>
+                                            {% elif category == 'SALUD' %}
+                                                <span class="badge bg-info">{{ category }}</span>
+                                            {% elif category == 'VESTIMENTA' %}
+                                                <span class="badge bg-warning">{{ category }}</span>
+                                            {% elif category == 'VIVIENDA' %}
+                                                <span class="badge bg-primary">{{ category }}</span>
+                                            {% elif category == 'EDUCACION' %}
+                                                <span class="badge bg-secondary">{{ category }}</span>
+                                            {% else %}
+                                                <span class="badge bg-light text-dark">N/A</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if transaction.get('Deducible') == 'SÍ' %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check me-1"></i>Sí
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-times me-1"></i>No
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success-soft">Procesada</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                        onclick="viewDetails({{ loop.index0 }})" 
+                                                        data-bs-toggle="tooltip" title="Ver detalles">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                        data-bs-toggle="tooltip" title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                                        data-bs-toggle="tooltip" title="Eliminar">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4">
+                                            <div class="text-muted">
+                                                <i class="fas fa-receipt fa-3x mb-3"></i>
+                                                <h5>No hay transacciones registradas</h5>
+                                                <p>Sube tu primera factura para comenzar a ver el historial</p>
+                                                <a href="{{ url_for('upload_receipt') }}" class="btn btn-primary">
+                                                    <i class="fas fa-plus me-2"></i>Subir Factura
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if transactions and transactions|length > 0 %}
+                    <nav class="mt-3">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item disabled">
+                                <span class="page-link">Anterior</span>
+                            </li>
+                            <li class="page-item active">
+                                <span class="page-link">1</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">Siguiente</span>
+                            </li>
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver detalles -->
+<div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles de la Transacción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- El contenido se carga dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Datos de las transacciones (pasados desde el backend)
+const transactionsData = {{ transactions|tojson if transactions else '[]' }};
+
+function filterTransactions() {
+    const category = document.getElementById('categoryFilter').value;
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    
+    console.log('Filtering with:', { category, dateFrom, dateTo });
+    // Aquí implementarías la lógica de filtrado
+    FinanzasSRI.showNotification('info', 'Filtros aplicados');
+}
+
+function viewDetails(index) {
+    if (transactionsData && transactionsData[index]) {
+        const transaction = transactionsData[index];
+        showTransactionDetails(transaction);
+    }
+}
+
+function showTransactionDetails(transaction) {
+    const modalBody = document.getElementById('modalBody');
+    
+    modalBody.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="fw-bold">Información del Comerciante</h6>
+                <p><strong>Nombre:</strong> ${transaction['Comerciante'] || 'N/A'}</p>
+                <p><strong>RUC:</strong> ${transaction['RUC'] || 'N/A'}</p>
+                <p><strong>Autorización:</strong> ${transaction['Autorización'] || 'N/A'}</p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold">Información de la Factura</h6>
+                <p><strong>Fecha:</strong> ${transaction['Fecha'] || 'N/A'}</p>
+                <p><strong>Monto Total:</strong> $${(transaction['Monto Total'] || 0).toFixed(2)}</p>
+                <p><strong>Subtotal:</strong> $${(transaction['Subtotal'] || 0).toFixed(2)}</p>
+                <p><strong>IVA:</strong> $${(transaction['IVA'] || 0).toFixed(2)}</p>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="fw-bold">Clasificación SRI</h6>
+                <p><strong>Categoría:</strong> <span class="badge bg-primary">${transaction['Categoría SRI'] || 'N/A'}</span></p>
+                <p><strong>Deducible:</strong> ${transaction['Deducible'] === 'SÍ' ? '<span class="badge bg-success">Sí</span>' : '<span class="badge bg-danger">No</span>'}</p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold">Procesamiento</h6>
+                <p><strong>Fecha de Procesamiento:</strong> ${transaction['Fecha Procesamiento'] || 'N/A'}</p>
+                <p><strong>Estado:</strong> <span class="badge bg-success">Procesada</span></p>
+            </div>
+        </div>
+        ${transaction['Descripción'] ? `
+        <hr>
+        <h6 class="fw-bold">Descripción de Items</h6>
+        <p>${transaction['Descripción']}</p>
+        ` : ''}
+    `;
+    
+    const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+    modal.show();
+}
+
+// Configurar fecha por defecto (último mes)
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date();
+    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+    
+    document.getElementById('dateTo').value = today.toISOString().split('T')[0];
+    document.getElementById('dateFrom').value = lastMonth.toISOString().split('T')[0];
+});
+</script>
+{% endblock %} 

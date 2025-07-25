@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Presupuestos - Finanzas SRI Ecuador{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0 text-gray-800 fw-bold">Gestión de Presupuestos</h1>
+            <p class="text-muted mb-0">Planifica y controla tus gastos por categoría SRI</p>
+        </div>
+    </div>
+
+    <!-- Budget Cards -->
+    <div class="row">
+        {% set budgets = [
+            {'category': 'ALIMENTACION', 'budget': 400, 'spent': 320, 'color': 'success', 'icon': 'utensils'},
+            {'category': 'SALUD', 'budget': 300, 'spent': 150, 'color': 'info', 'icon': 'heartbeat'},
+            {'category': 'VESTIMENTA', 'budget': 150, 'spent': 80, 'color': 'warning', 'icon': 'tshirt'},
+            {'category': 'VIVIENDA', 'budget': 100, 'spent': 75, 'color': 'primary', 'icon': 'home'},
+            {'category': 'EDUCACION', 'budget': 200, 'spent': 45, 'color': 'secondary', 'icon': 'graduation-cap'}
+        ] %}
+        
+        {% for budget in budgets %}
+        <div class="col-md-6 col-xl-4 mb-4">
+            <div class="card border-left-{{ budget.color }} shadow h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-{{ budget.icon }} text-{{ budget.color }} me-2"></i>
+                                <h6 class="mb-0 font-weight-bold">{{ budget.category|title }}</h6>
+                            </div>
+                            
+                            <div class="small text-muted mb-1">
+                                Gastado: ${{ budget.spent }} de ${{ budget.budget }}
+                            </div>
+                            
+                            {% set percentage = (budget.spent / budget.budget * 100) if budget.budget > 0 else 0 %}
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-{{ budget.color }}" 
+                                     role="progressbar" 
+                                     style="width: {{ percentage }}%">
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">{{ "{:.0f}%".format(percentage) }} usado</small>
+                                <small class="text-muted">${{ budget.budget - budget.spent }} restante</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

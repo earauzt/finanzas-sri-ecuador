@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Reporte Diario - Finanzas SRI Ecuador{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0 text-gray-800 fw-bold">Reporte Diario</h1>
+            <p class="text-muted mb-0">Gastos y actividad del día de hoy</p>
+        </div>
+    </div>
+
+    <!-- Today's Summary -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Gastos de Hoy
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        ${{ data.total if data else 0 }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                        Facturas Procesadas
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        {{ data.count if data else 0 }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                        Promedio por Factura
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        ${{ "{:.2f}".format(data.total / data.count if data and data.count > 0 else 0) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                        Fecha
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        {{ data.date if data else 'Hoy' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Breakdown -->
+    {% if data and data.categories %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Distribución por Categorías - Hoy</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for category, amount in data.categories.items() %}
+                        <div class="col-md-6 col-xl-4 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="category-icon {{ category.lower() }} me-3">
+                                    <i class="fas fa-{{ 'utensils' if category == 'ALIMENTACION' else 'tag' }}"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">{{ category|title }}</h6>
+                                    <strong>${{ "{:.2f}".format(amount) }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-calendar-day fa-3x text-muted mb-3"></i>
+                    <h4>Sin Actividad Hoy</h4>
+                    <p class="text-muted">No hay facturas procesadas el día de hoy.</p>
+                    <a href="{{ url_for('upload_receipt') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Subir Primera Factura
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

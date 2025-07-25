@@ -1,0 +1,336 @@
+{% extends "base.html" %}
+
+{% block title %}Subir Factura - Finanzas SRI Ecuador{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800 fw-bold">Subir Nueva Factura</h1>
+                    <p class="text-muted mb-0">Procesa automáticamente tu factura para deducciones SRI</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Upload Form -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-upload me-2"></i>
+                        Subir Factura
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <!-- File Upload Area -->
+                        <div class="file-upload-wrapper mb-4">
+                            <input type="file" 
+                                   id="receiptFile" 
+                                   name="file" 
+                                   class="file-upload-input" 
+                                   accept=".pdf,.jpg,.jpeg,.png"
+                                   required>
+                            <div class="file-upload-content">
+                                <div class="file-upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <h5 class="mb-3">Arrastra tu factura aquí o haz clic para seleccionar</h5>
+                                <p class="text-muted mb-0">
+                                    Formatos soportados: PDF, JPG, PNG<br>
+                                    Tamaño máximo: 16MB
+                                </p>
+                            </div>
+                            <div class="file-info mt-2" style="display: none;"></div>
+                        </div>
+
+                        <!-- Additional Information -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">Categoría SRI (Opcional)</label>
+                                    <select class="form-select" id="category" name="category">
+                                        <option value="">Detectar automáticamente</option>
+                                        <option value="ALIMENTACION">Alimentación</option>
+                                        <option value="SALUD">Salud</option>
+                                        <option value="VESTIMENTA">Vestimenta</option>
+                                        <option value="VIVIENDA">Vivienda</option>
+                                        <option value="EDUCACION">Educación</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="notes" class="form-label">Notas (Opcional)</label>
+                                    <input type="text" class="form-control" id="notes" name="notes" 
+                                           placeholder="Agregar notas adicionales...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                <i class="fas fa-magic me-2"></i>
+                                Procesar Factura
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Progress Bar -->
+                    <div class="progress mt-3" id="uploadProgress" style="display: none;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 0%"></div>
+                    </div>
+
+                    <!-- Results Area -->
+                    <div id="results" class="mt-4" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions Sidebar -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Instrucciones
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="fw-bold">¿Qué facturas puedo subir?</h6>
+                        <ul class="small text-muted">
+                            <li>Facturas con RUC válido</li>
+                            <li>Número de autorización SRI</li>
+                            <li>Fecha dentro del período fiscal</li>
+                            <li>Establecimientos autorizados</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Categorías SRI 2025</h6>
+                        <div class="small">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="category-icon alimentacion me-2">
+                                    <i class="fas fa-utensils"></i>
+                                </div>
+                                <div>
+                                    <strong>Alimentación</strong><br>
+                                    <span class="text-muted">Máximo: $5,252.59</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="category-icon salud me-2">
+                                    <i class="fas fa-heartbeat"></i>
+                                </div>
+                                <div>
+                                    <strong>Salud</strong><br>
+                                    <span class="text-muted">Máximo: $4,394.10</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="category-icon vestimenta me-2">
+                                    <i class="fas fa-tshirt"></i>
+                                </div>
+                                <div>
+                                    <strong>Vestimenta</strong><br>
+                                    <span class="text-muted">Máximo: $1,976.29</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="category-icon vivienda me-2">
+                                    <i class="fas fa-home"></i>
+                                </div>
+                                <div>
+                                    <strong>Vivienda</strong><br>
+                                    <span class="text-muted">Máximo: $1,097.97</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="category-icon educacion me-2">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div>
+                                    <strong>Educación</strong><br>
+                                    <span class="text-muted">Máximo: $4,394.10</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <small>
+                            <i class="fas fa-lightbulb me-1"></i>
+                            <strong>Tip:</strong> El sistema detectará automáticamente la categoría basándose en el tipo de establecimiento.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Uploads -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-history me-2"></i>
+                        Subidas Recientes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="recentUploads">
+                        <p class="text-muted small">No hay subidas recientes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const fileInput = document.getElementById('receiptFile');
+    const submitBtn = document.getElementById('submitBtn');
+    const progressBar = document.getElementById('uploadProgress');
+    const progressBarInner = progressBar.querySelector('.progress-bar');
+    const resultsDiv = document.getElementById('results');
+    
+    // Validar archivo
+    if (!fileInput.files[0]) {
+        FinanzasSRI.showNotification('error', 'Por favor selecciona un archivo');
+        return;
+    }
+    
+    // Preparar datos
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    
+    const category = document.getElementById('category').value;
+    const notes = document.getElementById('notes').value;
+    
+    if (category) formData.append('category', category);
+    if (notes) formData.append('notes', notes);
+    
+    // Mostrar loading
+    FinanzasSRI.showLoading(submitBtn, 'Procesando...');
+    progressBar.style.display = 'block';
+    resultsDiv.style.display = 'none';
+    
+    // Upload con progreso
+    FinanzasSRI.uploadReceipt(formData, function(progress) {
+        progressBarInner.style.width = progress + '%';
+        progressBarInner.textContent = Math.round(progress) + '%';
+    })
+    .then(response => {
+        FinanzasSRI.hideLoading(submitBtn);
+        progressBar.style.display = 'none';
+        
+        if (response.success) {
+            showResults(response.data);
+            FinanzasSRI.showNotification('success', 'Factura procesada exitosamente');
+            
+            // Limpiar formulario
+            fileInput.value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('notes').value = '';
+            
+            // Ocultar preview si existe
+            const preview = document.querySelector('.image-preview');
+            if (preview) preview.remove();
+            
+            const fileInfo = document.querySelector('.file-info');
+            if (fileInfo) fileInfo.style.display = 'none';
+            
+        } else {
+            FinanzasSRI.showNotification('error', response.error || 'Error procesando factura');
+            if (response.data) {
+                showResults(response.data, false);
+            }
+        }
+    })
+    .catch(error => {
+        FinanzasSRI.hideLoading(submitBtn);
+        progressBar.style.display = 'none';
+        FinanzasSRI.showNotification('error', 'Error de conexión: ' + error);
+    });
+});
+
+function showResults(data, success = true) {
+    const resultsDiv = document.getElementById('results');
+    
+    const statusClass = success ? 'success' : 'warning';
+    const statusIcon = success ? 'check-circle' : 'exclamation-triangle';
+    const statusText = success ? 'Procesada Exitosamente' : 'Revisión Requerida';
+    
+    resultsDiv.innerHTML = `
+        <div class="card border-${statusClass}">
+            <div class="card-header bg-${statusClass} text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-${statusIcon} me-2"></i>
+                    Factura ${statusText}
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Comerciante:</strong> ${data.merchant_name || 'No detectado'}</p>
+                        <p><strong>RUC:</strong> ${data.ruc || 'No detectado'}</p>
+                        <p><strong>Fecha:</strong> ${data.date || 'No detectada'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Total:</strong> $${(data.total_amount || 0).toFixed(2)}</p>
+                        <p><strong>Categoría:</strong> <span class="badge bg-primary">${data.sri_category || 'No asignada'}</span></p>
+                        <p><strong>Deducible:</strong> ${data.deductible ? '<span class="badge bg-success">Sí</span>' : '<span class="badge bg-danger">No</span>'}</p>
+                    </div>
+                </div>
+                ${success ? `
+                <div class="alert alert-success mt-3">
+                    <i class="fas fa-check me-2"></i>
+                    La factura ha sido agregada a tus deducciones SRI.
+                </div>
+                ` : `
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Esta factura requiere revisión manual antes de ser procesada.
+                </div>
+                `}
+            </div>
+        </div>
+    `;
+    
+    resultsDiv.style.display = 'block';
+}
+
+// Cargar subidas recientes al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    loadRecentUploads();
+});
+
+function loadRecentUploads() {
+    fetch('/api/stats')
+        .then(response => response.json())
+        .then(data => {
+            // Aquí implementarías la lógica para mostrar subidas recientes
+            console.log('Recent uploads loaded');
+        })
+        .catch(error => {
+            console.error('Error loading recent uploads:', error);
+        });
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Reporte Mensual - Finanzas SRI Ecuador{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0 text-gray-800 fw-bold">Reporte Mensual</h1>
+            <p class="text-muted mb-0">Resumen de gastos del mes actual</p>
+        </div>
+    </div>
+
+    <!-- Monthly Summary -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Total del Mes
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        ${{ data.total if data else 2450.80 }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                        Facturas Totales
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        {{ data.count if data else 24 }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                        Promedio Diario
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        ${{ "{:.2f}".format((data.total / 30) if data else 81.69) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                        Mes/Año
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        {{ data.month if data else '2025-01' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart and Categories -->
+    <div class="row">
+        <div class="col-xl-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Tendencia Mensual</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Por Categorías</h6>
+                </div>
+                <div class="card-body">
+                    {% set monthly_categories = data.categories if data else {
+                        'ALIMENTACION': 1200.50,
+                        'SALUD': 650.30,
+                        'VESTIMENTA': 300.00,
+                        'VIVIENDA': 200.00,
+                        'EDUCACION': 100.00
+                    } %}
+                    
+                    {% for category, amount in monthly_categories.items() %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="category-icon {{ category.lower() }} me-3">
+                            <i class="fas fa-{{ 'utensils' if category == 'ALIMENTACION' else 'tag' }}"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">{{ category|title }}</h6>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-primary" style="width: {{ (amount / 1500 * 100)|round }}%"></div>
+                            </div>
+                        </div>
+                        <div class="ms-3">
+                            <strong>${{ "{:.2f}".format(amount) }}</strong>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Gráfico de tendencia mensual
+const ctx = document.getElementById('monthlyChart').getContext('2d');
+const monthlyChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+        datasets: [{
+            label: 'Gastos Semanales',
+            data: [520, 680, 750, 500],
+            borderColor: '#4e73df',
+            backgroundColor: 'rgba(78, 115, 223, 0.1)',
+            borderWidth: 2,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return '$' + value;
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+{% endblock %} 

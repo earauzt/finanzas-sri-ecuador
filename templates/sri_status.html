@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Estado SRI - Finanzas SRI Ecuador{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0 text-gray-800 fw-bold">Estado de Deducciones SRI 2025</h1>
+            <p class="text-muted mb-0">Resumen oficial de tus deducciones para declaración</p>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Total Deducido
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">$2,450.80</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                        Disponible Restante
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">$12,302.60</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                        Progreso Anual
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">16.6%</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                        Facturas Procesadas
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">24</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Status Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Detalle por Categorías SRI 2025</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Categoría</th>
+                                    <th>Límite Anual</th>
+                                    <th>Monto Usado</th>
+                                    <th>Disponible</th>
+                                    <th>Porcentaje</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="category-icon alimentacion me-2">
+                                                <i class="fas fa-utensils"></i>
+                                            </div>
+                                            <strong>Alimentación</strong>
+                                        </div>
+                                    </td>
+                                    <td>$5,252.59</td>
+                                    <td>$1,200.50</td>
+                                    <td>$4,052.09</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 23%">23%</div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-success">Activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="category-icon salud me-2">
+                                                <i class="fas fa-heartbeat"></i>
+                                            </div>
+                                            <strong>Salud</strong>
+                                        </div>
+                                    </td>
+                                    <td>$4,394.10</td>
+                                    <td>$650.30</td>
+                                    <td>$3,743.80</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-info" role="progressbar" style="width: 15%">15%</div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-success">Activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="category-icon vestimenta me-2">
+                                                <i class="fas fa-tshirt"></i>
+                                            </div>
+                                            <strong>Vestimenta</strong>
+                                        </div>
+                                    </td>
+                                    <td>$1,976.29</td>
+                                    <td>$300.00</td>
+                                    <td>$1,676.29</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: 15%">15%</div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-success">Activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="category-icon vivienda me-2">
+                                                <i class="fas fa-home"></i>
+                                            </div>
+                                            <strong>Vivienda</strong>
+                                        </div>
+                                    </td>
+                                    <td>$1,097.97</td>
+                                    <td>$200.00</td>
+                                    <td>$897.97</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 18%">18%</div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-success">Activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="category-icon educacion me-2">
+                                                <i class="fas fa-graduation-cap"></i>
+                                            </div>
+                                            <strong>Educación</strong>
+                                        </div>
+                                    </td>
+                                    <td>$4,394.10</td>
+                                    <td>$100.00</td>
+                                    <td>$4,294.10</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-secondary" role="progressbar" style="width: 2%">2%</div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-warning">Bajo Uso</span></td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th><strong>TOTAL</strong></th>
+                                    <th><strong>$14,753.40</strong></th>
+                                    <th><strong>$2,450.80</strong></th>
+                                    <th><strong>$12,302.60</strong></th>
+                                    <th><strong>16.6%</strong></th>
+                                    <th><span class="badge bg-success">En Progreso</span></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Acciones de Exportación</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <button class="btn btn-success w-100">
+                                <i class="fas fa-file-excel me-2"></i>
+                                Exportar a Excel
+                            </button>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <button class="btn btn-danger w-100">
+                                <i class="fas fa-file-pdf me-2"></i>
+                                Generar PDF
+                            </button>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <button class="btn btn-info w-100">
+                                <i class="fas fa-download me-2"></i>
+                                Resumen SRI
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
