@@ -26,8 +26,20 @@ sri_validator = SRIValidator()
 def index():
     """Dashboard principal"""
     try:
-        # Obtener datos de deducciones actuales
-        deductions_data = sheets_manager.get_current_deductions()
+        # Si está en modo demostración, usar datos de ejemplo
+        if Config.DEMO_MODE:
+            # Datos de demostración para mostrar funcionalidad
+            demo_deductions = {
+                'ALIMENTACION': 1200.50,
+                'SALUD': 650.30,
+                'VESTIMENTA': 300.00,
+                'VIVIENDA': 200.00,
+                'EDUCACION': 100.00
+            }
+            deductions_data = demo_deductions
+        else:
+            # Obtener datos reales de Google Sheets
+            deductions_data = sheets_manager.get_current_deductions()
         
         # Calcular estadísticas
         stats = {
@@ -49,7 +61,7 @@ def index():
                 'description': config['description']
             }
         
-        return render_template('dashboard.html', stats=stats)
+        return render_template('dashboard.html', stats=stats, demo_mode=Config.DEMO_MODE)
     except Exception as e:
         app.logger.error(f"Error en dashboard: {str(e)}")
         return render_template('dashboard.html', stats=None, error=str(e))
@@ -58,8 +70,53 @@ def index():
 def transactions():
     """Página de transacciones"""
     try:
-        transactions_data = sheets_manager.get_transactions()
-        return render_template('transactions.html', transactions=transactions_data)
+        if Config.DEMO_MODE:
+            # Datos de demostración para transacciones
+            demo_transactions = [
+                {
+                    'Fecha': '2025-01-15',
+                    'Comerciante': 'Supermaxi',
+                    'RUC': '1790011674001',
+                    'Monto Total': 45.80,
+                    'Subtotal': 40.89,
+                    'IVA': 4.91,
+                    'Categoría SRI': 'ALIMENTACION',
+                    'Deducible': 'SÍ',
+                    'Autorización': '1234567890123456789',
+                    'Descripción': 'Productos alimenticios básicos (x15)',
+                    'Fecha Procesamiento': '2025-01-15T10:30:00'
+                },
+                {
+                    'Fecha': '2025-01-14',
+                    'Comerciante': 'Farmacia Cruz Azul',
+                    'RUC': '1790016919001',
+                    'Monto Total': 28.50,
+                    'Subtotal': 25.45,
+                    'IVA': 3.05,
+                    'Categoría SRI': 'SALUD',
+                    'Deducible': 'SÍ',
+                    'Autorización': '9876543210987654321',
+                    'Descripción': 'Medicamentos recetados (x3)',
+                    'Fecha Procesamiento': '2025-01-14T16:45:00'
+                },
+                {
+                    'Fecha': '2025-01-13',
+                    'Comerciante': 'De Prati',
+                    'RUC': '1790344451001',
+                    'Monto Total': 89.99,
+                    'Subtotal': 80.35,
+                    'IVA': 9.64,
+                    'Categoría SRI': 'VESTIMENTA',
+                    'Deducible': 'SÍ',
+                    'Autorización': '5555666677778888999',
+                    'Descripción': 'Camisa formal (x1)',
+                    'Fecha Procesamiento': '2025-01-13T12:15:00'
+                }
+            ]
+            transactions_data = demo_transactions
+        else:
+            transactions_data = sheets_manager.get_transactions()
+        return render_template('transactions.html', transactions=transactions_data, demo_mode=Config.DEMO_MODE)
     except Exception as e:
         app.logger.error(f"Error en transacciones: {str(e)}")
         return render_template('transactions.html', transactions=[], error=str(e))
@@ -202,4 +259,19 @@ def internal_error(error):
     return render_template('500.html'), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=3000) 
+    # Configuración para diferentes entornos
+    port = int(os.environ.get('PORT', 3000))
+    host = os.environ.get('HOST', '0.0.0.0')
+    debug = os.environ.get('FLASK_DEBUG', 'true').lower() == 'true'
+    
+    print("🚀 Iniciando Sistema de Finanzas SRI Ecuador")
+    print(f"📍 Servidor: http://{host}:{port}")
+    print("📊 Dashboard de Deducciones SRI 2025")
+    print("=" * 50)
+    
+    app.run(
+        host=host,
+        port=port,
+        debug=debug,
+        threaded=True
+    ) 

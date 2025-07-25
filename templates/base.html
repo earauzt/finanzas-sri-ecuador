@@ -132,6 +132,18 @@
             
             <!-- Page Content -->
             <main class="main-content">
+                <!-- Demo Mode Banner -->
+                {% if demo_mode %}
+                <div class="container-fluid pt-3">
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Modo Demostración:</strong> Esta aplicación está ejecutándose con datos de ejemplo. 
+                        Para funcionalidad completa, configura las APIs de Google Cloud Vision, OpenAI y Google Sheets.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </div>
+                {% endif %}
+                
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         <div class="container-fluid mt-3">

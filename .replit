@@ -1,0 +1,17 @@
+modules = ["python-3.11"]
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["python3", "app.py"]
+deploymentTarget = "cloudrun"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
+
+[env]
+PYTHONPATH = "${REPL_HOME}:${PYTHONPATH}"
+FLASK_ENV = "development"
+FLASK_DEBUG = "true" 

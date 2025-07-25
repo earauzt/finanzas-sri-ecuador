@@ -7,6 +7,9 @@ class Config:
     # Flask Configuration
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
+    # Modo demostración para Replit
+    DEMO_MODE = os.environ.get('DEMO_MODE', 'true').lower() == 'true'
+    
     # Google Cloud Vision API
     GOOGLE_APPLICATION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
     
