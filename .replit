@@ -4,7 +4,7 @@ modules = ["python-3.11"]
 channel = "stable-24_05"
 
 [deployment]
-run = ["python3", "app.py"]
+run = ["sh", "-c", "pip install -r requirements.txt && python3 main.py"]
 deploymentTarget = "cloudrun"
 
 [[ports]]
@@ -14,4 +14,20 @@ externalPort = 80
 [env]
 PYTHONPATH = "${REPL_HOME}:${PYTHONPATH}"
 FLASK_ENV = "development"
-FLASK_DEBUG = "true" 
+FLASK_DEBUG = "true"
+
+[languages]
+
+[languages.python3]
+pattern = "**/*.py"
+
+[languages.python3.languageServer]
+start = "pylsp"
+
+[packager]
+language = "python3"
+
+[packager.features]
+enabledForHosting = false
+packageSearch = true
+guessImports = true 

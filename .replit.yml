@@ -1,0 +1,37 @@
+language: python3
+
+run: |
+  pip install -r requirements.txt
+  python3 main.py
+
+modules:
+  - python-3.11
+
+nix:
+  channel: stable-24_05
+
+deployment:
+  run: ["sh", "-c", "pip install -r requirements.txt && python3 main.py"]
+  deploymentTarget: cloudrun
+
+ports:
+  - localPort: 3000
+    externalPort: 80
+
+env:
+  PYTHONPATH: "${REPL_HOME}:${PYTHONPATH}"
+  FLASK_ENV: development
+  FLASK_DEBUG: "true"
+  DEMO_MODE: "true"
+
+packager:
+  language: python3
+  ignoredPackages:
+    - pkg-config
+    - libxmlsec1-dev
+
+languages:
+  python3:
+    pattern: "**/*.py"
+    languageServer:
+      start: pylsp 
